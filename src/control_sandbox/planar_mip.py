@@ -3,8 +3,8 @@
 
 '''
   A planar Inverted Mobile Pendulum
-
 '''
+
 import pdb
 import numpy as np, math, scipy.integrate, matplotlib.pyplot as plt
 
@@ -59,7 +59,7 @@ def dyn(X, t, U, P):
 
     # saturate input
     tau = np.clip(U[iv_t], -P.tsat, P.tsat)
-    # upper rows are found directly in state vector
+    # upper rows are directly found in state vector
     Xd[s_x]  = X[s_xd]
     Xd[s_theta] = thd
     # compute the lower rows
@@ -103,11 +103,12 @@ def sim_open_loop(X0=[0, 0, 0, 0]):
 
 def main(save_anim=False):
     time, X, U, P = sim_open_loop([0, 0.01, 0, 0])
-    pmip_u.plot(time, X, U)
-    anim = pmip_u.animate(time, X, U, P, 'Open Loop')
+    exp_name = 'open_loop'
+    #pmip_u.plot(time, X, U, None)
+    #anim = pmip_u.animate(time, X, U, None, P, 'Open Loop')
+    anim = pmip_u.animate_and_plot(time, X, U, None, P, exp_name, _drawings=True, _imgs=True)
     if save_anim:
-        pmip_u.save_animation(anim, 'mip_open_loop.mp4', time[1]-time[0])
-        #anim.save('mip_open_loop.mp4', writer='ffmpeg', fps=1./(time[1]-time[0]))
+        pmip_u.save_animation(anim, 'mip_{}.mp4'.format(exp_name), time[1]-time[0])
     plt.show()
 
 
