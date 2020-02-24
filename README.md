@@ -2,7 +2,7 @@
 Control Experiments in Python
 
 
-[Documentation index](https://poine.github.io/ann_elucubrations/)
+[Documentation index](https://poine.github.io/control_sandbox/)
 
 
 ## Installing
