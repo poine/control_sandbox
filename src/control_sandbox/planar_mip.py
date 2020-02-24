@@ -43,11 +43,10 @@ s_size   = 4  # dimension of the state vector
 iv_t    = 0  # torque on the wheel axis in N.m
 iv_size = 1  # dimension of the input vector
 
+#
 # Dynamic model as state space representation
 #
-# X : state
-# U : input
-# P : param
+# X, U, P : state, input, param
 #
 # returns Xd, time derivative of state
 #
@@ -102,7 +101,7 @@ def sim_open_loop(X0=[0, 0, 0, 0]):
 
 
 def main(save_anim=False):
-    time, X, U, P = sim_open_loop([0, 0.01, 0, 0])
+    time, X, U, P = sim_open_loop(X0=[0, 0.01, 0, 0])
     exp_name = 'open_loop'
     #pmip_u.plot(time, X, U, None)
     #anim = pmip_u.animate(time, X, U, None, P, 'Open Loop')
