@@ -14,7 +14,7 @@ layout: default
   <figcaption>Fig1. - Planar MIP Picture (left) and Schematics (right).</figcaption>
 </figure>
 
-[code](https://github.com/poine/ann_elucubrations/blob/master/src/mip_simple.py)
+[code](https://github.com/poine/control_sandbox/blob/master/src/control_sandbox/planar_mip.py)
 
 The derivation of a space state equation is adapted from \cite{ostovari2014}
 ### Notations
@@ -68,7 +68,7 @@ $$\begin{equation}
    \end{equation}$$
 
   * Linear acceleration of the body
-   in $$\vect{i}$$ direction: $$\begin{equation} m_b (\ddot{x} -\dot{\theta}L\cos{\theta} + \dot{theta}^2 L \sin{\theta}) = P_x \end{equation}$$
+   in $$\vect{i}$$ direction: $$\begin{equation} m_b (\ddot{x} -\dot{\theta}L\cos{\theta} + \dot{\theta}^2 L \sin{\theta}) = P_x \end{equation}$$
 
 
 ### State Space Equation
