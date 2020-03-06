@@ -3,6 +3,7 @@
 
 '''
   A planar Inverted Mobile Pendulum
+  See: https://poine.github.io/control_sandbox/planar_mip.html
 '''
 
 import pdb
@@ -18,7 +19,7 @@ class Param:
         self.R, self.L       = 0.04, 0.1      # radius of wheel and dist from wheel axis to body center of mass in m
         self.mw, self.mb     = 0.02, 0.2      # mass of the wheel and body in kg
         self.Iw, self.Ib     = 0.00025, 0.003 # inertia of wheel and body 
-        self.tsat = float('inf') if sat is None else sat # max torque of the motor
+        self.tsat = sat or float('inf')       # max torque of the motor
         self.g = 9.81
         self.compute_aux()
         
@@ -103,9 +104,11 @@ def sim_open_loop(X0=[0, 0, 0, 0]):
 def main(save_anim=False):
     time, X, U, P = sim_open_loop(X0=[0, 0.01, 0, 0])
     exp_name = 'open_loop'
-    #pmip_u.plot(time, X, U, None)
+    #pmip_u.plot(time, X, U, Yc=None, P=None)
+    #pmip_u.plot2(time, X, U, Yc=None, P=None)
     #anim = pmip_u.animate(time, X, U, None, P, 'Open Loop')
-    anim = pmip_u.animate_and_plot(time, X, U, None, P, exp_name, _drawings=True, _imgs=True)
+    #anim = pmip_u.animate_and_plot(time, X, U, None, P, exp_name, _drawings=True, _imgs=True)
+    anim = pmip_u.animate_and_plot2(time, X, U, None, P, exp_name, _drawings=True, _imgs=True)
     if save_anim:
         pmip_u.save_animation(anim, 'mip_{}.mp4'.format(exp_name), time[1]-time[0])
     plt.show()

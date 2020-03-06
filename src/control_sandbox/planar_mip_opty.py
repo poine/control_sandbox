@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+
+Compute optimal trajectory for planar mobile inverted pendulum
+
 """
 import numpy as np, sympy as sym
 import matplotlib.pyplot as plt
@@ -15,8 +18,9 @@ import pdb
 class Planner:
     def __init__(self,
                  _obj_fun=None, _obj_grad=None,
-                 _min_bank=-np.deg2rad(30.), _max_bank=np.deg2rad(30.),
                  _min_v=-2., _max_v=2.,
+                 _min_bank=-np.deg2rad(30.), _max_bank=np.deg2rad(30.),
+                 _min_rvel=-np.deg2rad(300.), _max_rvel=np.deg2rad(300.),
                  _min_tau=-0.3, _max_tau=0.3,
                  x0=0.1, x1=0.1, th0=0., th1=0.):
         self.P = pmip.Param()
@@ -34,11 +38,6 @@ class Planner:
         self._input_symbols = (self._stau)
 
         # Free variables.
-        # self._slice_x    = slice(0*self.num_nodes, 1*self.num_nodes, 1)
-        # self._slice_th   = slice(1*self.num_nodes, 2*self.num_nodes, 1)
-        # self._slice_xd   = slice(2*self.num_nodes, 3*self.num_nodes, 1)
-        # self._slice_thd  = slice(3*self.num_nodes, 4*self.num_nodes, 1)
-        # self._slice_tau  = slice(4*self.num_nodes, 5*self.num_nodes, 1)
         self._slice_x, self._slice_th,  self._slice_xd, self._slice_thd, self._slice_tau = \
             [slice(_i*self.num_nodes, (_i+1)*self.num_nodes, 1) for _i in range(5)]
         # Specify the known system parameters.
@@ -47,7 +46,10 @@ class Planner:
         # Cost function
         #_obj_fun  = _obj_fun  or obj_sum_tau2
         #_obj_grad = _obj_grad or obj_grad_sum_tau2
-        self.R_tau = 0.0001
+        self.R_tau = 0.001
+        self.Q_x   = 1.
+        self.Q_xd  = 0.
+        self.Q_thd = 0.
         
         # Specify the symbolic instance constraints, i.e. initial and end conditions.
         self.x1 = x1
@@ -63,11 +65,13 @@ class Planner:
             self._instance_constraints += tuple([self._sth(self.duration-_i*self.interval_value)-th1 for _i in range(_end_pause)])
             self._instance_constraints += tuple([self._sxd(self.duration-_i*self.interval_value) for _i in range(_end_pause)])
             self._instance_constraints += tuple([self._sthd(self.duration-_i*self.interval_value) for _i in range(_end_pause)])
-        
+
+        # Specify bounds.
         self._bounds = { self._sth(self._st): (_min_bank, _max_bank),
+                         self._sthd(self._st): (_min_rvel, _max_rvel),
                          self._sxd(self._st): (_min_v, _max_v),
                          self._stau(self._st): (_min_tau, _max_tau) }
-        # add thetad
+
         
         # Create an optimization problem.
         self.prob =  opty.direct_collocation.Problem(lambda _free: self.obj_1(_free),
@@ -101,15 +105,17 @@ class Planner:
     def obj_1(self, _free):
         _mean_taus = np.sum(_free[self._slice_tau]**2)/self.num_nodes
         _mean_dist_to_goal = np.sum((_free[self._slice_x]-self.x1)**2)/self.num_nodes
+        _mean_vel = np.sum(_free[self._slice_xd]**2)/self.num_nodes
+        _mean_rvel = np.sum(_free[self._slice_thd]**2)/self.num_nodes
         #pdb.set_trace()
-        #return -_mean_taus
-        #return -_mean_dist_to_goal
-        return self.R_tau*_mean_taus +_mean_dist_to_goal
+        return self.R_tau*_mean_taus + self.Q_x*_mean_dist_to_goal + self.Q_xd*_mean_vel  + self.Q_thd*_mean_rvel
         
     def obj_grad_1(self, _free):
         grad = np.zeros_like(_free)
-        grad[self._slice_tau] = self.R_tau*2.*_free[self._slice_tau]/self.num_nodes
-        grad[self._slice_x] = 2.*(_free[self._slice_x]-self.x1)/self.num_nodes 
+        grad[self._slice_tau] = self.R_tau * 2.*_free[self._slice_tau]/self.num_nodes
+        grad[self._slice_x]   = self.Q_x   * 2.*(_free[self._slice_x]-self.x1)/self.num_nodes 
+        grad[self._slice_xd]  = self.Q_xd  * 2.*_free[self._slice_xd]/self.num_nodes 
+        grad[self._slice_thd] = self.Q_thd * 2.*_free[self._slice_thd]/self.num_nodes 
         return grad
 
     #
@@ -144,15 +150,17 @@ def plot_solve(prob, solution):
     
 def main(force_recompute=False, filename='/tmp/planar_mip_opty.pkl', save_anim=False):
     exp_name = 'opty'
-    _p = Planner(x0=-0.5, x1=0.5, th0=0., th1=0., _min_v=-3., _max_v=3., _min_tau=-0.4, _max_tau=0.4)
-    _p.configure(tol=1e-9, max_iter=3000)
+    _p = Planner(x0=-1.5, x1=1.5, th0=0., th1=0.,
+                 _min_bank=-np.deg2rad(30.), _max_bank=np.deg2rad(30.),
+                 _min_v=-3., _max_v=3., _min_tau=-0.4, _max_tau=0.4)
+    _p.configure(tol=1e-20, max_iter=3000)
     _p.run()
     plot_solve(_p.prob, _p.solution)
     #anim = pmip_u.animate(_p.sol_time, _p.sol_X, _p.sol_U, _p.P, exp_name)
-    anim = pmip_u.animate_and_plot(_p.sol_time, _p.sol_X, _p.sol_U, None, _p.P, exp_name, _drawings=True, _imgs=True)
+    anim = pmip_u.animate_and_plot2(_p.sol_time, _p.sol_X, _p.sol_U, None, _p.P, exp_name, _drawings=True, _imgs=True)
     if save_anim:
         pmip_u.save_animation(anim, 'mip_{}.mp4'.format(exp_name), 1./_p.freq)
     plt.show()
     
 if __name__ == '__main__':
-    main(force_recompute=True)
+    main(force_recompute=False, save_anim=False)

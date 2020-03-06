@@ -83,7 +83,6 @@ def main(save_anim=False):
         poles = [-5, -3.5+2.j, -3.5-2.j, -20]
         time, X, U, Yc, P, exp_name = sim_place(P, X0, poles, sp=lambda t: step(t, a=_a))
     if 0:
-        #Q, R = np.diag([10, 1, 1, 1]), np.diag([2])
         Q, R = np.diag([5, 1, 0.1, 0.01]), np.diag([4])
         time, X, U, Yc, P, exp_name =  sim_lqr(P, X0, Q, R, sp=lambda t: step(t, a=_a))
     if 1:
@@ -91,7 +90,7 @@ def main(save_anim=False):
         time, X, U, Yc, P, exp_name =  sim_two_loops_ctl(P, X0, sp=lambda t: step(t, a=_a))
     #pmip_u.plot(time, X, U, Yc, P, window_title=exp_name)
     #anim = pmip_u.animate(time, X, U, Yc, P, exp_name)
-    anim = pmip_u.animate_and_plot(time, X, U, Yc, P, exp_name, _drawings=True, _imgs=True)
+    anim = pmip_u.animate_and_plot2(time, X, U, Yc, P, exp_name, _drawings=True, _imgs=True)
     if save_anim:
         pmip_u.save_animation(anim, 'mip_{}.mp4'.format(exp_name), time[1]-time[0])
     plt.show()

@@ -1,7 +1,16 @@
-import math, numpy as np
+import os, math, numpy as np
+import pickle
+
 """
   Miscellanous...
 """
+# we assume _this_ file is cs_dir/src/control_sandbox/misc_utils.py
+def cs_dir():
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+    return os.path.abspath(os.path.join(dirname, '../..'))
+
+def cs_asset(asset): return os.path.join(cs_dir(), asset)
+
 def get_om_xi(lambda1):
     om = math.sqrt(lambda1.real**2+lambda1.imag**2)
     xi = math.cos(np.arctan2(lambda1.imag, -lambda1.real))
@@ -18,3 +27,45 @@ def get_precommand(A, B, C, K):
     H = -np.linalg.inv(tmp2) if nr == nc else -np.linalg.pinv(tmp2)
     return H
 
+
+"""
+Misc
+"""
+def save_trajectory(time, X, U, desc, filename):
+    with open(filename, "wb") as f:
+        pickle.dump([time, X, U, desc], f)
+
+def load_trajectory(filename):
+    with open(filename, "rb") as f:
+        time, X, U, desc = pickle.load(f)
+    return time, X, U, desc
+
+class CtlNone:
+    def __init__(self, yc=None):
+        self.yc = yc
+
+    def get(self, X, k):
+        return self.yc[k]
+
+class IoCtlCst:
+    def __init__(self, ysp):
+        self.ysp = ysp
+
+    def get(self, k, y_k, y_km1, u_km1):
+        return self.ysp[k]
+
+def make_random_pulses(dt, size, min_nperiod=1, max_nperiod=10, min_intensity=-1, max_intensity=1.):
+    ''' make a vector of pulses of randon duration and intensities '''
+    npulses = int(size/max_nperiod*2)
+    durations = np.random.random_integers(low=min_nperiod, high=max_nperiod, size=npulses)
+    intensities =  np.random.uniform(low=min_intensity, high=max_intensity, size=npulses)
+    pulses = []
+    for duration, intensitie in zip(durations, intensities):
+        pulses += [intensitie for i in range(duration)]
+    pulses = np.array(pulses)
+    time = np.linspace(0, dt*len(pulses), len(pulses))
+    return time, pulses
+
+def step(t, a0=-1, a1=1, dt=4, t0=0): return a0 if math.fmod(t+t0, dt) > dt/2 else a1
+def step_input_vec(time, a0=-1, a1=1, dt=4, t0=0): return [step(t, a0, a1, dt, t0) for t in time]
+def step_vec(time, a0=-1, a1=1, dt=4, t0=0): return [step(t, a0, a1, dt, t0) for t in time]
