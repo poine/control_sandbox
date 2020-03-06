@@ -7,3 +7,4 @@ layout: default
 # Index
 
   * [Planar MIP](planar_mip.html)
+  * [Plant identification](sys_id.html)
