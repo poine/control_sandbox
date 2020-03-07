@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os, logging, numpy as np, matplotlib.pyplot as plt
@@ -6,7 +6,7 @@ import keras, pickle, scipy.signal
 import control
 import pdb
 
-import plot_utils as jpu, misc_utils as ut
+import plot_utils as pu, misc_utils as ut
 import so_lti
 
 
@@ -87,22 +87,22 @@ class SoLtiIoAnn:
 
 
 def plot_training_dataset(_ann_in, _ann_out):
-    fig = jpu.prepare_fig(window_title='Training dataset')
+    fig = pu.prepare_fig(window_title='Training dataset')
     names = '$y_k$', '$y_{k-1}$', '$u_{k-1}$', '$u_k$', '$y_{k+1}$'
     for i in range(4):
         ax = plt.subplot(1, 5, i+1)
         plt.hist(_ann_in[:,i])
-        jpu.decorate(ax, title=names[i])
+        pu.decorate(ax, title=names[i])
     ax = plt.subplot(1, 5, 5)
     plt.hist(_ann_out)
-    jpu.decorate(ax, title=names[4])
+    pu.decorate(ax, title=names[4])
         
 def plot_training(ann):
-    fig = jpu.prepare_fig(window_title='Training history')
+    fig = pu.prepare_fig(window_title='Training history')
     _h = ann.history.history
     plt.plot(_h['loss'], label='loss')
     plt.plot(_h['val_loss'], label='val_loss')
-    jpu.decorate(plt.gca(), 'loss', xlab='epochs', legend=True)
+    pu.decorate(plt.gca(), 'loss', xlab='epochs', legend=True)
 
 def report_plant_id(plant, ann):
     print('\n## Real plant (as weights)\n{}'.format(ann.weights_from_real_plant(plant)[0].ravel()))
@@ -126,12 +126,12 @@ def simulate_plant_and_ann(plant, ann_plant):
         yp[k+1] = plant.io_dyn(yp[k], yp[k-1], sp[k], sp[k-1])
         ya[k+1] = ann_plant.predict(ya[k], ya[k-1], sp[k-1], sp[k])
 
-    fig = jpu.prepare_fig(window_title='Time simulation')
+    fig = pu.prepare_fig(window_title='Time simulation')
     ax = plt.gca()
     plt.plot(time, sp, label='sp')
     plt.plot(time, yp, label='plant')
     plt.plot(time, ya, label='ann')
-    jpu. decorate(ax, title='$y$', xlab='time in s', ylab='m', legend=True)
+    pu. decorate(ax, title='$y$', xlab='time in s', ylab='m', legend=True)
     plt.savefig(ut.cs_asset('docs/plots/so_lti__ident__io__keras.png'))
 
 

@@ -93,6 +93,9 @@ def main(save_anim=False):
     anim = pmip_u.animate_and_plot2(time, X, U, Yc, P, exp_name, _drawings=True, _imgs=True)
     if save_anim:
         pmip_u.save_animation(anim, 'mip_{}.mp4'.format(exp_name), time[1]-time[0])
+        # ffmpeg -i src/mip_Place.mp4 -r 15 docs/plots/planar_mip_sim_fb_place.gif
+        # ffmpeg -i src/mip_LQR.mp4 -r 15 docs/plots/planar_mip_sim_fb_lqr.gif
+        # ffmpeg -i src/mip_Two_Loops.mp4 -r 15 docs/plots/planar_mip_sim_fb_two_loops.gif
     plt.show()
     
 if __name__ == "__main__":

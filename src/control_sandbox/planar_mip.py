@@ -91,8 +91,14 @@ def num_jacobian(X, U, P):
     B[:,0] = delta_f
     return A,B
 
+class Plant():
+    def __init__(self, P=None):
+        self.P = P or Param
 
-
+    def disc_dyn(self, Xk, Uk, dt):
+        Xkp1 = scipy.integrate.odeint(dyn, Xk, time, args=(Uk, self.P))
+        return Xkp1
+        
 def sim_open_loop(X0=[0, 0, 0, 0]):
     P, U = Param(), [0]
     time = np.arange(0., 7.9, 0.01)
@@ -111,6 +117,7 @@ def main(save_anim=False):
     anim = pmip_u.animate_and_plot2(time, X, U, None, P, exp_name, _drawings=True, _imgs=True)
     if save_anim:
         pmip_u.save_animation(anim, 'mip_{}.mp4'.format(exp_name), time[1]-time[0])
+        # ffmpeg -i src/mip_open_loop.mp4 -r 15 docs/plots/planar_mip_sim_open_loop.gif
     plt.show()
 
 

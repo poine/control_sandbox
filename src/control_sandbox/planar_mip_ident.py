@@ -8,11 +8,12 @@ System Identification for Planar Mobile Inverted Pendulum
 import numpy as np, sympy as sym
 import matplotlib.pyplot as plt
 
+import planar_mip
 
 
-
-def main():
-    pass
+def main(nb_samples=int(1e3)):
+    plant = planar_mip.Plant()
+    
 
 
 

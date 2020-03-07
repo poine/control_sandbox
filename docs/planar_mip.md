@@ -123,7 +123,13 @@ $$\begin{equation}
   \end{cases}
 \end{equation}$$
 
+## Simulation
+The dynamic model for the planar MIP is available in the file  [planar_mip.py](https://github.com/poine/control_sandbox/blob/master/src/control_sandbox/planar_mip.py).
 
+<figure>
+	<img src="plots/planar_mip_sim_open_loop.gif" alt="Planar MIP simulation plot" width="640">
+	<figcaption>Fig3. -  Simulation of the planar MIP in open loop.</figcaption>
+</figure>
 
 ### References
 \bibitem{ostovari2014} Saam Ostovari et al {\em The dynamics of a Mobile Inverted Pendulum (MIP)}  2014.

@@ -7,4 +7,4 @@ MathJax.Hub.Config({
   }
 });
 
-MathJax.Ajax.loadComplete("https://poine.github.io/ann_elucubrations/mathjax/local.js");
+MathJax.Ajax.loadComplete("https://poine.github.io/control_sandbox/mathjax/local.js");
