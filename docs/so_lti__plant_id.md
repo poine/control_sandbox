@@ -2,6 +2,7 @@
 title: Plant Identification
 layout: default
 ---
+
 <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML,https://poine.github.io/control_sandbox/mathjax/local.js" type="text/javascript"></script>
 
 # Plant Identification

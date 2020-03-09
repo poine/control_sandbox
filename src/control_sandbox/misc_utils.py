@@ -11,6 +11,21 @@ def cs_dir():
 
 def cs_asset(asset): return os.path.join(cs_dir(), asset)
 
+
+def save_trajectory(time, X, U, desc, filename):
+    with open(filename, "wb") as f:
+        pickle.dump([time, X, U, desc], f)
+
+def load_trajectory(filename):
+    with open(filename, "rb") as f:
+        time, X, U, desc = pickle.load(f)
+    return time, X, U, desc
+
+
+
+"""
+Misc
+"""
 def get_om_xi(lambda1):
     om = math.sqrt(lambda1.real**2+lambda1.imag**2)
     xi = math.cos(np.arctan2(lambda1.imag, -lambda1.real))
@@ -27,18 +42,6 @@ def get_precommand(A, B, C, K):
     H = -np.linalg.inv(tmp2) if nr == nc else -np.linalg.pinv(tmp2)
     return H
 
-
-"""
-Misc
-"""
-def save_trajectory(time, X, U, desc, filename):
-    with open(filename, "wb") as f:
-        pickle.dump([time, X, U, desc], f)
-
-def load_trajectory(filename):
-    with open(filename, "rb") as f:
-        time, X, U, desc = pickle.load(f)
-    return time, X, U, desc
 
 class CtlNone:
     def __init__(self, yc=None):
@@ -69,3 +72,30 @@ def make_random_pulses(dt, size, min_nperiod=1, max_nperiod=10, min_intensity=-1
 def step(t, a0=-1, a1=1, dt=4, t0=0): return a0 if math.fmod(t+t0, dt) > dt/2 else a1
 def step_input_vec(time, a0=-1, a1=1, dt=4, t0=0): return [step(t, a0, a1, dt, t0) for t in time]
 def step_vec(time, a0=-1, a1=1, dt=4, t0=0): return [step(t, a0, a1, dt, t0) for t in time]
+
+
+"""
+Naive numerical differentiation
+"""
+def num_jacobian(X, U, P, dyn):
+    s_size = len(X)
+    i_size = len(U)
+    epsilonX = (0.1*np.ones(s_size)).tolist()
+    dX = np.diag(epsilonX)
+    A = np.zeros((s_size, s_size))
+    for i in range(0, s_size):
+        dx = dX[i,:]
+        delta_f = dyn(X+dx/2, 0, U, P) - dyn(X-dx/2, 0, U, P)
+        delta_f = delta_f / dx[i]
+        A[:,i] = delta_f
+
+    epsilonU = (0.1*np.ones(i_size)).tolist()
+    dU = np.diag(epsilonU)
+    B = np.zeros((s_size,i_size))
+    for i in range(0, i_size):
+        du = dU[i,:]
+        delta_f = dyn(X, 0, U+du/2, P) - dyn(X, 0, U-du/2, P)
+        delta_f = delta_f / du[i]
+        B[:,i] = delta_f
+
+    return A,B

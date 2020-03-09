@@ -2,7 +2,9 @@
 title: ANN Elucubrations
 layout: default
 ---
-<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML,https://poine.github.io/control_sandbox/mathjax/local.js" type="text/javascript"></script>
+
 
 
 # Planar VTOL
@@ -17,7 +19,7 @@ The following figure describes the variables and parameters of the model:
 
 ### Generalized coordinates
  
-$$q=\begin{pmatrix}x&z&\theta\end{pmatrix}^T $$
+$$ \vect{q} =\begin{pmatrix}x&z&\theta\end{pmatrix}^T $$
 
 ### Kinetic energy
 

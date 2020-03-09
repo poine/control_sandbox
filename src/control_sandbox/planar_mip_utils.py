@@ -161,5 +161,6 @@ def animate_and_plot2(time, X, U, Yc, P, title=None, _drawings=False, _imgs=True
 def save_animation(anim, filename, dt):
     print('encoding animation video, please wait, it will take a while')
     anim.save(filename, writer='ffmpeg', fps=1./dt)
+    #anim.save(filename, fps=1./dt, writer='imagemagick') # fails... 
     print('video encoded, saved to {}, Bye'.format(filename))
 

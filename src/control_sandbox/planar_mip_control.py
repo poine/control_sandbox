@@ -5,7 +5,7 @@
   Feedback on a Mobile Inverted Pendulum (MIP)
 
 '''
-import pdb
+import sys, pdb
 import numpy as np, math, scipy.integrate, matplotlib.pyplot as plt
 import control.matlab
 
@@ -75,17 +75,17 @@ def sim_two_loops_ctl(P, X0=[0, 0, 0, 0], sp=lambda t: step(t, a=0.9)):
     return time, X, U, Yc, P, 'Two_Loops'
 
 
-def main(save_anim=False):
+def main(save_anim=False, ctl_kind='place'):
     P = pmip.Param(sat=0.3)
     _a = 0.4
     X0 = [_a, 0.01, 0, 0]
-    if 0:
+    if ctl_kind == 'place':
         poles = [-5, -3.5+2.j, -3.5-2.j, -20]
         time, X, U, Yc, P, exp_name = sim_place(P, X0, poles, sp=lambda t: step(t, a=_a))
-    if 0:
+    elif ctl_kind=='lqr':
         Q, R = np.diag([5, 1, 0.1, 0.01]), np.diag([4])
         time, X, U, Yc, P, exp_name =  sim_lqr(P, X0, Q, R, sp=lambda t: step(t, a=_a))
-    if 1:
+    else:
         poles = [-5, -3.5+2.j, -3.5-2.j, -20]
         time, X, U, Yc, P, exp_name =  sim_two_loops_ctl(P, X0, sp=lambda t: step(t, a=_a))
     #pmip_u.plot(time, X, U, Yc, P, window_title=exp_name)
@@ -99,4 +99,4 @@ def main(save_anim=False):
     plt.show()
     
 if __name__ == "__main__":
-    main()
+    main(save_anim='-save'in sys.argv, ctl_kind='place')

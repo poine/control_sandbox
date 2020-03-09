@@ -6,10 +6,10 @@
   See: https://poine.github.io/control_sandbox/planar_mip.html
 '''
 
-import pdb
+import pdb, sys
 import numpy as np, math, scipy.integrate, matplotlib.pyplot as plt
 
-import planar_mip_utils as pmip_u
+import planar_mip_utils as pmip_u, misc_utils as mu
 
 #
 # Dynamic Model Parameters
@@ -72,33 +72,35 @@ def dyn(X, t, U, P):
 
     return Xd
 
-#
 # Numerical Jacobians of the Dynamic Model
-#
 def num_jacobian(X, U, P):
-    dX = np.diag([0.01, 0.01, 0.01, 0.01])
-    A = np.zeros((s_size, s_size))
-    for i in range(0, s_size):
-        dx = dX[i,:]
-        delta_f = dyn(X+dx/2, 0, U, P) - dyn(X-dx/2, 0, U, P)
-        delta_f = delta_f / dx[i]
-        A[:,i] = delta_f
-
-    dU = np.diag([0.01])
-    delta_f = dyn(X, 0, U+dU/2, P) - dyn(X, 0, U-dU/2, P)
-    delta_f = delta_f / dU
-    B = np.zeros((s_size,iv_size))
-    B[:,0] = delta_f
-    return A,B
+    return mu.num_jacobian(X, U, P, dyn)
 
 class Plant():
     def __init__(self, P=None):
-        self.P = P or Param
+        self.P = P or Param()
 
-    def disc_dyn(self, Xk, Uk, dt):
-        Xkp1 = scipy.integrate.odeint(dyn, Xk, time, args=(Uk, self.P))
-        return Xkp1
+    def cont_dyn(self, X, t, U):
+        return dyn(X, t, U, self.P)
         
+    def disc_dyn(self, Xk, tk, dt, Uk):
+        Xkp1 = scipy.integrate.odeint(dyn, Xk, [tk, tk+dt], args=(Uk, self.P))[1]
+        return Xkp1
+
+    def num_jacobian(self, X, t, U):
+        return mu.num_jacobian(X, U, self.P, dyn)
+
+    def sim_with_input_fun(self, time, ctl, X0):
+        X = np.zeros((len(time), s_size))
+        U = np.zeros((len(time), iv_size))
+        X[0] = X0
+        for i in range(1, len(time)):
+            U[i-1] = ctl.get(X[i-1], i-1)
+            X[i] = self.disc_dyn(X[i-1], time[i-1], time[i]-time[i-1], [U[i-1]])
+        U[-1] = U[-2]
+        return X, U
+    
+
 def sim_open_loop(X0=[0, 0, 0, 0]):
     P, U = Param(), [0]
     time = np.arange(0., 7.9, 0.01)
@@ -107,7 +109,7 @@ def sim_open_loop(X0=[0, 0, 0, 0]):
     return time, X, U, P
 
 
-def main(save_anim=False):
+def main(save_anim=True):
     time, X, U, P = sim_open_loop(X0=[0, 0.01, 0, 0])
     exp_name = 'open_loop'
     #pmip_u.plot(time, X, U, Yc=None, P=None)
@@ -118,8 +120,9 @@ def main(save_anim=False):
     if save_anim:
         pmip_u.save_animation(anim, 'mip_{}.mp4'.format(exp_name), time[1]-time[0])
         # ffmpeg -i src/mip_open_loop.mp4 -r 15 docs/plots/planar_mip_sim_open_loop.gif
+        #pmip_u.save_animation(anim, 'mip_{}.gif'.format(exp_name), time[1]-time[0])
     plt.show()
 
 
 if __name__ == "__main__":
-    main()
+    main(save_anim='-save'in sys.argv)
