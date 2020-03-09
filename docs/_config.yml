@@ -17,8 +17,8 @@ title: Control Sandbox
 #email: poinix@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   Control Experiments in Python.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+#baseurl: "" # the subpath of your site, e.g. /blog
+#url: "" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: poine
 github_username:  poine
 
@@ -26,8 +26,8 @@ github_username:  poine
 markdown: kramdown
 #theme: minima
 theme: jekyll-theme-modernist
-plugins:
-  - jekyll-feed
+#plugins:
+#  - jekyll-feed
 
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
