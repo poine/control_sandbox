@@ -99,3 +99,9 @@ def num_jacobian(X, U, P, dyn):
         B[:,i] = delta_f
 
     return A,B
+
+
+
+class LTIPlant:
+    def __init__(self, A):
+        pass

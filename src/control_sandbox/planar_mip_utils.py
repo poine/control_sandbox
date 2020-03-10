@@ -16,7 +16,7 @@ import pdb
 #
 # a plot function
 #
-def plot(time, X, U, Yc=None, P=None, window_title="trajectory", figure=None, axs=None):
+def plot(time, X, U, Yc=None, P=None, window_title="trajectory", figure=None, axs=None, label=None):
     #print('in plot {} {}'.format(figure, axs))
     margins=(0.04, 0.05, 0.98, 0.96, 0.20, 0.34)
     figure = figure or p3_pu.prepare_fig(figure, window_title, figsize=(0.75*20.48, 0.75*10.24), margins=margins)
@@ -26,14 +26,14 @@ def plot(time, X, U, Yc=None, P=None, window_title="trajectory", figure=None, ax
     axs = axs if axs is not None else figure.subplots(3,1)
     #pdb.set_trace()
     for ax, (title, ylab, data) in zip(axs, plots):
-        ax.plot(time, data, linewidth=2)
+        ax.plot(time, data, linewidth=2, label=label)
         p3_pu.decorate(ax, title=title, ylab=ylab)
     if Yc is not None:
         axs[0].plot(time, Yc, 'g', label='Setpoint')
     if P is not None and P.tsat != float('inf'):
         axs[2].plot(time, P.tsat*np.ones_like(time), 'k', label='sat')
         axs[2].plot(time, -P.tsat*np.ones_like(time), 'k', label='-sat')
-    return figure
+    return figure, axs
 
 def plot2(time, X, U, Yc=None, P=None, window_title="trajectory", figure=None, axs=None):
     margins=(0.04, 0.05, 0.98, 0.96, 0.20, 0.34)
