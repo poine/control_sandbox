@@ -86,7 +86,6 @@ def export_dataset_as_cvs(filename, time, Xks, Uks, desc, _input, _output):
     hdr = 'x_k, theta_k, xd_k, thetad_k, tau_k, x_k+1, theta_k+1, xd_k+1, thetad_k+1'
     with open(filename, "wb") as f:
         np.savetxt(f, np.hstack((_input, _output)), delimiter=',', header=hdr)
-
     
 def ident_lin_reg(_input, _output):
     _prm_size = planar_mip.s_size*(planar_mip.s_size+planar_mip.iv_size)
@@ -98,8 +97,11 @@ def ident_lin_reg(_input, _output):
         H[planar_mip.s_size*i+1, 4:8]  = _input[i,:4]; H[planar_mip.s_size*i+1,17]=_input[i,4]
         H[planar_mip.s_size*i+2, 8:12] = _input[i,:4]; H[planar_mip.s_size*i+2,18]=_input[i,4]
         H[planar_mip.s_size*i+3,12:16] = _input[i,:4]; H[planar_mip.s_size*i+3,19]=_input[i,4]
-    params = np.dot(np.linalg.pinv(H), Y)
-    return params
+    X_hat = np.dot(np.linalg.pinv(H), Y)
+    Y_hat = np.dot(H, X_hat)
+    loss = np.linalg.norm(Y_hat-Y)/len(Y)
+    print('loss {:.2e}'.format(loss))
+    return X_hat
 
 def validate(plant, params, dt):
     # compare jacobians
@@ -107,7 +109,6 @@ def validate(plant, params, dt):
     cont_sys = control.ss(Ac, Bc, [[1, 0, 0, 0]], [[0]])
     disc_sys = control.sample_system(cont_sys, dt)
     print('real jacobian\n{}\n{}'.format(disc_sys.A, disc_sys.B))
-    print(params)
     A1d = params[:16].reshape((4,4))
     B1d = params[16:].reshape((4,1))
     print('identified jacobian\n{}\n{}'.format(A1d, B1d))
@@ -121,7 +122,7 @@ def validate(plant, params, dt):
     Xm[0] = X0
     for k in range(1, len(time)):
         Um[k-1] = ctl.get(Xm[k-1], k-1)
-        Xm[k] = np.dot(A1d, Xm[k-1]) + np.dot(B1d, Um[k-1] ) #ann.predict(np.array([[Xm[k-1,0], Xm[k-1,1], Xm[k-1,2], Xm[k-1,3], Um[k-1,0]]]))
+        Xm[k] = np.dot(A1d, Xm[k-1]) + np.dot(B1d, Um[k-1] )
     # plot both trajectories
     figure, axs = planar_mip_utils.plot(time, X, U, label='real')
     planar_mip_utils.plot(time, Xm, Um, figure=figure, axs=axs, label='ann')
@@ -133,7 +134,7 @@ def main(dt=0.01, nb_samples=int(50e3), exp_name='foo', train_type='unif', force
         time, Xks, Uks, desc, _input, _output = make_uniform_training_set(plant, dt, force_remake=force_remake, nsamples=nb_samples)
         export_dataset_as_cvs('/tmp/planar_mip__controlled_training_traj.csv', time, Xks, Uks, desc, _input, _output)
     else: # train_type=='ctld'
-        time, Xks, Uks, desc, _input, _output = make_controlled_training_set(plant, dt, force_remake=force_remake, nsamples=nb_samples)
+        time, Xks, Uks, desc, _input, _output = make_controlled_training_set(plant, dt, force_remake=force_remake, nsamples=nb_samples, max_intensity=0.4)
         export_dataset_as_cvs('/tmp/planar_mip__uniform_training_traj.csv', time, Xks, Uks, desc, _input, _output)
         planar_mip_utils.plot(time, Xks, Uks)
     plot_dataset(time, Xks, Uks, train_type)
@@ -143,5 +144,5 @@ def main(dt=0.01, nb_samples=int(50e3), exp_name='foo', train_type='unif', force
 
 
 if __name__ == '__main__':
-    main(nb_samples=int(50e3), train_type='ctld', force_remake=True)
+    main(nb_samples=int(50e3), train_type='unif', force_remake=False)
 

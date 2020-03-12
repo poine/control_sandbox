@@ -73,13 +73,26 @@ $$\begin{equation}
 
 ### State Space Equation
 
-$$\begin{equation}
+{% comment %}
+$$
+\begin{equation}
   (m_bRL\cos{\theta}) \ddot{\phi} + (I_b + m_bL^2) \ddot{\theta} = m_b g L \sin{\theta} - \tau
-\end{equation}$$
+\end{equation}
+$$
 
+$$
 \begin{equation}
   \left(I_w + (m_b+m_w)R^2\right) \ddot{\phi} + (m_b R L \cos{\theta}) \ddot{\theta}  = m_b R L \dot{\theta}^2 \sin{\theta} + \tau
 \end{equation}
+$$
+{% endcomment %}
+
+$$
+\begin{align}
+(m_bRL\cos{\theta}) \ddot{\phi} + (I_b + m_bL^2) \ddot{\theta} &= m_b g L \sin{\theta} - \tau \\
+\left(I_w + (m_b+m_w)R^2\right) \ddot{\phi} + (m_b R L \cos{\theta}) \ddot{\theta}  &= m_b R L \dot{\theta}^2 \sin{\theta} + \tau
+\end{align}
+$$
 
 or matricially
 
@@ -91,13 +104,13 @@ $$\begin{equation}
 with
 
 $$\begin{equation}
-  a = m_bRL\cos{\theta} \quad b = I_b + m_bL^2 \quad c = I_w + (m_b+m_w)R^2 
+  a = m_bRL\cos{\theta}   \qquad   b = I_b + m_bL^2   \qquad   c = I_w + (m_b+m_w)R^2 
 \end{equation}$$
 
 and
 
 $$\begin{equation}
-  d = m_b g L \sin{\theta} - \tau \quad e =  m_b R L \dot{\theta}^2 \sin{\theta} + \tau
+  d = m_b g L \sin{\theta} - \tau   \qquad   e =  m_b R L \dot{\theta}^2 \sin{\theta} + \tau
 \end{equation}$$
 
 When the system has full rank ($$a^2-bc \ne 0$$), equations can be separated, leading to
@@ -118,8 +131,8 @@ which expands to:
 
 $$\begin{equation}
   \begin{cases}
-    \ddot{\phi} = \\
-    \ddot{\theta} =
+    \ddot{\phi} = \frac{(m_bRL\cos{\theta}) (m_b g L \sin{\theta} - \tau) - (I_b + m_bL^2)(m_b R L \dot{\theta}^2 \sin{\theta} + \tau)}{\left(m_bRL\cos{\theta}\right)^2 - (I_b + m_bL^2)\left(I_w + (m_b+m_w)R^2\right)}\\
+    \ddot{\theta} = \frac{-\left(I_w + (m_b+m_w)R^2\right)(m_b g L \sin{\theta} - \tau)+(I_b + m_bL^2)(m_b R L \dot{\theta}^2 \sin{\theta} + \tau)}{\left(m_bRL\cos{\theta}\right)^2 - (I_b + m_bL^2)\left(I_w + (m_b+m_w)R^2\right)}
   \end{cases}
 \end{equation}$$
 

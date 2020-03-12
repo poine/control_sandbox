@@ -107,7 +107,6 @@ class Planner:
         _mean_dist_to_goal = np.sum((_free[self._slice_x]-self.x1)**2)/self.num_nodes
         _mean_vel = np.sum(_free[self._slice_xd]**2)/self.num_nodes
         _mean_rvel = np.sum(_free[self._slice_thd]**2)/self.num_nodes
-        #pdb.set_trace()
         return self.R_tau*_mean_taus + self.Q_x*_mean_dist_to_goal + self.Q_xd*_mean_vel  + self.Q_thd*_mean_rvel
         
     def obj_grad_1(self, _free):
@@ -139,7 +138,6 @@ class Planner:
 
         self.sol_X = np.vstack((self.solution[self._slice_x], self.solution[self._slice_th], self.solution[self._slice_xd], self.solution[self._slice_thd])).T
         self.sol_U = self.solution[self._slice_tau].reshape((-1,1))
-        #pdb.set_trace()
         
           
 def plot_solve(prob, solution):
