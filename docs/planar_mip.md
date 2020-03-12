@@ -14,9 +14,9 @@ layout: default
   <figcaption>Fig1. - Planar MIP Picture (left) and Schematics (right).</figcaption>
 </figure>
 
-[code](https://github.com/poine/control_sandbox/blob/master/src/control_sandbox/planar_mip.py)
 
-The derivation of a space state equation is adapted from \cite{ostovari2014}
+The derivation of a space state equation is adapted from {% comment %}\cite{ostovari2014}{% endcomment %} [(1)](http://renaissance.ucsd.edu/courses/mae143c/MIPdynamics.pdf). A python implementation is available im the file [planar_mip.py](https://github.com/poine/control_sandbox/blob/master/src/control_sandbox/planar_mip.py)
+
 ### Notations
   * $$m_w$$, $$m_b$$, $$I_w$$, $$I_b$$: respectively wheel and body masses and inertias
   * $$L$$: distance between wheel axis and body center of mass
@@ -24,6 +24,7 @@ The derivation of a space state equation is adapted from \cite{ostovari2014}
   * $$\theta$$: angle between vertical and body axis
   * $$\phi$$: angle between horizontal and the wheel
   * $$x$$: horizontal coordinate of the wheel axis
+  * $$\tau$$: the motor torque applied to the wheel
 
 ### Kinematics
 
@@ -44,7 +45,7 @@ $$\begin{equation}
     -L\ddot{\theta}\sin{\theta} - L \dot{\theta}^2 \cos{\theta} \end{pmatrix}
 \end{equation}$$
 
-The \emph{no slip} hypothesis also brings:
+The **no slip** hypothesis also brings:
 $$\begin{equation}
   x = -R \phi
 \end{equation}$$
@@ -115,12 +116,14 @@ $$\begin{equation}
 
 When the system has full rank ($$a^2-bc \ne 0$$), equations can be separated, leading to
 
+{% comment %}
 $$\begin{equation}
   \begin{pmatrix}\ddot{\phi} \\ \ddot{\theta} \end{pmatrix} =
   \frac{1}{a^2-bc}\begin{pmatrix}a & -b \\ -c & a \end{pmatrix}\begin{pmatrix} d \\ e \end{pmatrix}
 \end{equation}$$
 
 or
+{% endcomment %}
 
 $$\begin{equation}
   \begin{pmatrix}\ddot{\phi} \\ \ddot{\theta} \end{pmatrix} =
@@ -137,12 +140,18 @@ $$\begin{equation}
 \end{equation}$$
 
 ## Simulation
-The dynamic model for the planar MIP is available in the file  [planar_mip.py](https://github.com/poine/control_sandbox/blob/master/src/control_sandbox/planar_mip.py).
+The dynamic model for the planar MIP is available in the file  [planar_mip.py](https://github.com/poine/control_sandbox/blob/master/src/control_sandbox/planar_mip.py). Figure 2 display a simulation of the MIP with zero torque applied to the wheel.
 
 <figure>
 	<img src="plots/planar_mip_sim_open_loop.gif" alt="Planar MIP simulation plot" width="640">
-	<figcaption>Fig3. -  Simulation of the planar MIP in open loop.</figcaption>
+	<figcaption>Fig2. -  Simulation of the planar MIP in open loop.</figcaption>
 </figure>
 
 ### References
+
+
+{% comment %}
 \bibitem{ostovari2014} Saam Ostovari et al {\em The dynamics of a Mobile Inverted Pendulum (MIP)}  2014.
+{% endcomment %}
+
+  *  (1) [The dynamics of a Mobile Inverted Pendulum (MIP)](http://renaissance.ucsd.edu/courses/mae143c/MIPdynamics.pdf), Saam Ostovari et al, USCD,  2014
